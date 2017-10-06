@@ -6,7 +6,7 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(glfw-3.2.1)
+add_subdirectory(glfw)
 
 include_directories(${glfw_INCLUDE_DIRS})
 
@@ -23,7 +23,7 @@ include_directories("${GLFW_SOURCE_DIR}/deps")
 set(GLAD "${GLFW_SOURCE_DIR}/deps/glad/glad.h"
          "${GLFW_SOURCE_DIR}/deps/glad.c")
 
-add_executable(game WIN32 MACOSX_BUNDLE main.c ${GLAD})
+add_executable(game WIN32 MACOSX_BUNDLE src/main.c ${GLAD})
 
 target_link_libraries(game glfw)
 
