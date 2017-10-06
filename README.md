@@ -11,7 +11,9 @@ For example, for Visual Studio Community 2017 default location is
 Default location is `C:\Program Files\CMake\bin`.
 
 ### Linux
-TBD
+1. Install [CMake](https://cmake.org/).
+2. Install [XOrg](https://www.x.org/wiki/) development package. 
+For example `xorg-dev` if you are using `Debian` or `Ubuntu`.
 
 ## Build
 Run `build.sh` to build the game including GLFW library.
