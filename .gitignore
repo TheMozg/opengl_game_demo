@@ -1,3 +1,2 @@
-build/
-build_glfw_full/
-glfw-3.2.1/examples/CMakeFiles/
+build.out/
+install.out/

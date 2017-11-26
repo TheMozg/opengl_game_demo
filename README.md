@@ -16,6 +16,4 @@ Default location is `C:\Program Files\CMake\bin`.
 For example `xorg-dev` if you are using `Debian` or `Ubuntu`.
 
 ## Build
-Run `build.sh` to build the game including GLFW library.
-
-Run `build-glfw-full.sh` to build only GLFW library with tests and examples.
+Simply run `make` (or `.\toolchain\make.exe` on Windows). `Makefile` is a simple wrapper for lunching `cmake` with predefined configuration.
