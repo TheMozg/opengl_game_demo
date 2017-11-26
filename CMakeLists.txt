@@ -37,7 +37,7 @@ add_executable(
 target_link_libraries(${PROJECT_NAME} glfw)
 
 set_target_properties (${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME}
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
 set_target_properties (${PROJECT_NAME} PROPERTIES
