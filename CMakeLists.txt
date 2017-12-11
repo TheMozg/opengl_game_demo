@@ -9,15 +9,10 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(thirdparty/glfw)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /wd4201")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11")
 endif()
-
-include_directories(thirdparty/glfw/include)
-include_directories(thirdparty/glad/include)
-include_directories(thirdparty/glm)
-include_directories(thirdparty/stb)
 
 file(GLOB VENDORS_SOURCES thirdparty/glad/src/glad.c)
 file(GLOB PROJECT_HEADERS sources/*.h sources/*.hpp)
@@ -30,9 +25,14 @@ add_executable(
     ${PROJECT_SOURCES}
     ${PROJECT_HEADERS}
     ${PROJECT_SHADERS}
-	${PROJECT_TEXTURS}
+    ${PROJECT_TEXTURS}
     ${VENDORS_SOURCES}
 )
+
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC thirdparty/glfw/include)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC thirdparty/glad/include)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC thirdparty/glm)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC thirdparty/stb)
 
 target_link_libraries(${PROJECT_NAME} glfw)
 

@@ -1,26 +1,20 @@
 #pragma once
 
-#include <glad/glad.h>
+#include "opengl.hpp"
 
+#include <glad/glad.h>
 #include <string>
 
-class Shader
-{
+class Shader: public OpenGLObject {
 private:
-	GLuint mID;
-	GLuint create(std::string const &filename);
-	void   print_errors(GLuint shader);
+    GLuint create(std::string const &filename);
+    void   printErrors(GLuint shader);
 public:
-     Shader();
-	~Shader();
+    Shader();
+    ~Shader();
 
-	GLuint getID();
-	GLuint getUniformLocation(std::string const &name);
-	
-	void   activate();
-    void   deactivate();
-	void   destroy();
-
-	void   attach(std::string const &filename);
-	void   link();
+    GLuint getUniformLocation(std::string const &name);
+    void   activate();
+    void   attach(std::string const &filename);
+    void   link();
 };

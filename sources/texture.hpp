@@ -1,15 +1,15 @@
 #pragma once
 
-#include <glad/glad.h>
+#include "opengl.hpp"
 
+#include <glad/glad.h>
 #include <string>
 
-class Texture
-{
-private:
-	GLuint mID;
+class Texture: public OpenGLObject {
 public:
-	void init();
-	void load(std::string const &filename);
-	GLuint getID();
+    Texture();
+    ~Texture();
+
+    void load(std::string const &filename);
+    void activate();
 };
