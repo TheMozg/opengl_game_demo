@@ -14,11 +14,19 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++11")
 endif()
 
-file(GLOB VENDORS_SOURCES thirdparty/glad/src/glad.c)
-file(GLOB PROJECT_HEADERS sources/*.h sources/*.hpp)
-file(GLOB PROJECT_SOURCES sources/*.c sources/*.cpp)
+file(GLOB VENDORS_SOURCES thirdparty/glad/src/glad.c sources/stb_image.c)
+file(GLOB PROJECT_HEADERS sources/*.hpp)
+file(GLOB PROJECT_SOURCES sources/*.cpp)
 file(GLOB PROJECT_SHADERS shaders/*)
 file(GLOB PROJECT_TEXTURS textures/*)
+file(GLOB PROJECT_MAPS    maps/*)
+
+source_group("Headers"               FILES ${PROJECT_HEADERS})
+source_group("Sources"               FILES ${PROJECT_SOURCES})
+source_group("Sources (thirdparty)"  FILES ${VENDORS_SOURCES})
+source_group("Shaders"               FILES ${PROJECT_SHADERS})
+source_group("Textures"              FILES ${PROJECT_TEXTURS})
+source_group("Maps"                  FILES ${PROJECT_MAPS})
 
 add_executable(
     ${PROJECT_NAME}
@@ -26,6 +34,7 @@ add_executable(
     ${PROJECT_HEADERS}
     ${PROJECT_SHADERS}
     ${PROJECT_TEXTURS}
+	${PROJECT_MAPS}
     ${VENDORS_SOURCES}
 )
 
@@ -51,3 +60,4 @@ set_target_properties (${PROJECT_NAME} PROPERTIES
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX} DESTINATION .)
 install(DIRECTORY shaders DESTINATION .)
 install(DIRECTORY textures DESTINATION .)
+install(DIRECTORY maps DESTINATION .)

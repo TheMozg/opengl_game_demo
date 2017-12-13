@@ -1,12 +1,15 @@
 #include "texture.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <glad/glad.h>
 #include <string>
 
 Texture::Texture() {
     glGenTextures(1, &mID);
+}
+
+Texture::Texture(std::string const & filename) : Texture() {
+    load(filename);
 }
 
 Texture::~Texture() {
@@ -26,7 +29,7 @@ void Texture::load(std::string const &filename) {
         if (channels == 4)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     } else {
-        printError("Failed to load texture");
+        printError("Failed to load texture - " + filename);
     }
     stbi_image_free(data);
 }

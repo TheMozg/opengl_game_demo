@@ -8,6 +8,7 @@
 class Texture: public OpenGLObject {
 public:
     Texture();
+	Texture(std::string const &filename);
     ~Texture();
 
     void load(std::string const &filename);

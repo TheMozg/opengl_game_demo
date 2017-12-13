@@ -9,10 +9,11 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "quad.hpp"
+#include "map.hpp"
 
 #include <iostream>
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), -90.0f, 0.0f);
+Camera camera(glm::vec3(20.0f, 1.0f, 10.0f), 180.0f, 0.0f);
 double last_xpos;
 double last_ypos;
 
@@ -88,32 +89,10 @@ int main() {
     ourShader.attach("shaders/camera.vert");
     ourShader.link();
 
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3( 1.3f, -2.0f, -2.5f),
-        glm::vec3( 1.5f,  2.0f, -2.5f),
-        glm::vec3( 1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };
-
-    Quad quads[10];
-    for (unsigned int i = 0; i < 10; i++) {
-        quads[i].setPosition(cubePositions[i]);
-    }
-
-    Texture t1;
-    t1.load("textures/container.jpg");
-
-    Texture t2;
-    t2.load("textures/awesomeface.png");
+    Map map;
+    map.load("maps/map01.bmp");
 
     ourShader.activate();
-
 
     while (!glfwWindowShouldClose(window)) {
         double currentFrame = glfwGetTime();
@@ -125,8 +104,6 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        ourShader.activate();
-
         int width, height;
         glfwGetFramebufferSize(window, &width,&height);
 
@@ -136,15 +113,7 @@ int main() {
         glm::mat4 view = camera.getViewMatrix();
         glUniformMatrix4fv(ourShader.getUniformLocation("view"), 1, GL_FALSE, &view[0][0]);
 
-        for (unsigned int i = 0; i < 10; i++) {
-            if (i%2==0) {
-                t1.activate();
-            }
-            else {
-                t2.activate();
-            }
-            quads[i].draw(ourShader.getUniformLocation("model"));
-        }
+        map.draw(ourShader.getUniformLocation("model"));
 
         glfwSwapBuffers(window);
         glfwPollEvents();

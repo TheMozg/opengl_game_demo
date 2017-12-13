@@ -4,7 +4,7 @@
 #include "texture.hpp"
 #include <memory>
 
-class Quad: public OpenGLModel {
+class Cube: public OpenGLModel {
 public:
-    Quad(std::shared_ptr<Texture> texture);
+    Cube(std::shared_ptr<Texture> texture);
 };

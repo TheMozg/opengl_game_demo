@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-const float DEFAULT_SPEED      = 2.5f;
+const float DEFAULT_SPEED      = 4.5f;
 const float DEFAULT_SENSITIVTY = 0.1f;
 
 // Constructor with vectors
