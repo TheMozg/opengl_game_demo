@@ -14,6 +14,7 @@
 #include <iostream>
 
 Camera camera(glm::vec3(20.0f, 1.0f, 10.0f), 180.0f, 0.0f);
+
 double last_xpos;
 double last_ypos;
 
@@ -103,7 +104,16 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        auto cameraPosOld = camera.getPosition();
         processInput(window);
+        auto cameraPosNew = camera.getPosition();
+
+        for (auto &obj : objects) {
+            if (obj->collidesWith(cameraPosNew)) {
+                camera.setPosition(cameraPosOld);
+                break;
+            }
+        }
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

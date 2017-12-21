@@ -23,6 +23,9 @@ public:
     // Processes input received from a mouse input system
     void processMouse(float xoffset, float yoffset);
 
+    glm::vec3 getPosition();
+    void setPosition(glm::vec3 position);
+
 private:
     // Camera Attributes
     glm::vec3 mPosition;

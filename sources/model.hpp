@@ -7,6 +7,11 @@
 #include <memory>
 #include <vector>
 
+enum class OpenGLModelType {
+    Quad,
+    Cube
+};
+
 class OpenGLModel: public OpenGLObject {
 protected:
     std::shared_ptr<Texture> mTexture;
@@ -19,6 +24,10 @@ protected:
 public:
     OpenGLModel(std::shared_ptr<Texture> texture);
     ~OpenGLModel();
+
+    virtual OpenGLModelType type() = 0;
+    virtual bool collidesWith(glm::vec3 point) = 0;
+
     void draw(GLuint modelLocation);
     void move(glm::vec3 position);
     void rotate(glm::vec3 angles);

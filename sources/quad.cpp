@@ -21,3 +21,7 @@ Quad::Quad(std::shared_ptr<Texture> texture): OpenGLModel(texture) {
 
     initVBO(vCoordinates, tCoordinates);
 }
+
+OpenGLModelType Quad::type() {
+    return OpenGLModelType::Cube;
+}

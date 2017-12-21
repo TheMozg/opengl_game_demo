@@ -60,6 +60,14 @@ void Camera::processMouse(float xoffset, float yoffset) {
     updateCameraVectors();
 }
 
+glm::vec3 Camera::getPosition() {
+    return mPosition;
+}
+
+void Camera::setPosition(glm::vec3 position) {
+    mPosition = position;
+}
+
 // Calculates the front vector from the Camera's (updated) Eular Angles
 void Camera::updateCameraVectors() {
     // Calculate the new Front vector
