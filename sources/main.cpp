@@ -12,8 +12,12 @@
 #include "map.hpp"
 
 #include <iostream>
+#include <list>
+#include <memory>
 
 Camera camera(glm::vec3(20.0f, 1.0f, 10.0f), 180.0f, 0.0f);
+
+std::list<std::unique_ptr<OpenGLModel>> objects;
 
 double last_xpos;
 double last_ypos;
@@ -25,6 +29,8 @@ void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+    auto cameraPosOld = camera.getPosition();
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.processKeyboard(CameraMovement::FORWARD, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -33,6 +39,21 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboard(CameraMovement::LEFT, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(CameraMovement::RIGHT, (float)deltaTime);
+
+    auto cameraPosNew = camera.getPosition();
+
+    auto cameraPosTmp = cameraPosOld;
+    for (size_t i = 0; i < 3; i++ ) {
+        cameraPosTmp[i] = cameraPosNew[i];
+        for (auto &obj : objects) {
+            if (obj->collidesWith(cameraPosTmp)) {
+                cameraPosTmp[i] = cameraPosOld[i];
+                break;
+            }
+        }
+    }
+
+    camera.setPosition(cameraPosTmp);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -95,7 +116,7 @@ int main() {
     textures.push_back(std::make_shared<Texture>("textures/portal_white.jpg"));
     textures.push_back(std::make_shared<Texture>("textures/portal_white_2.jpg"));
 
-    auto objects = Map::load("maps/map01.bmp", textures);
+    objects = Map::load("maps/map01.bmp", textures);
 
     ourShader.activate();
 
