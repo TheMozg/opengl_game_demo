@@ -15,9 +15,15 @@
 #include <list>
 #include <memory>
 
-Camera camera(glm::vec3(20.0f, 1.0f, 10.0f), 180.0f, 0.0f);
+Camera camera(glm::vec3(20.0f, 2.0f, 10.0f), 180.0f, 0.0f);
 
 std::list<std::unique_ptr<OpenGLModel>> objects;
+
+bool upJetpackMode = false;
+const float upJumpVelocity = 5.0f;
+const float upAcceleration = -9.8;
+float upVelocity = 0.0f;
+bool upCollision = true;
 
 double last_xpos;
 double last_ypos;
@@ -26,6 +32,8 @@ double deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
 void processInput(GLFWwindow *window) {
+    upVelocity += upAcceleration * deltaTime;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -39,14 +47,31 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboard(CameraMovement::LEFT, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(CameraMovement::RIGHT, (float)deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        if (upJetpackMode){
+            upVelocity = upJumpVelocity;
+        } else {
+            if (upCollision) {
+                upVelocity = upJumpVelocity;
+            }
+        }
+    }
 
     auto cameraPosNew = camera.getPosition();
+    cameraPosNew.y += upVelocity * deltaTime;
 
     auto cameraPos = cameraPosOld;
     for (size_t i = 0; i < 3; i++ ) {
+        if (i == 1) {
+            upCollision = false;
+        }
         cameraPos[i] = cameraPosNew[i];
         for (auto &obj : objects) {
-            if (obj->collidesWith(cameraPos, 0.3)) {
+            if (obj->collidesWith(cameraPos, {0.15f, 0.15f}, {0.05f, 0.75f}, {0.15f, 0.15f})) {
+                if (i == 1) {
+                    upCollision = true;
+                    upVelocity = 0.0f;
+                }
                 cameraPos[i] = cameraPosOld[i];
                 break;
             }
@@ -68,6 +93,11 @@ void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
     last_ypos = ypos;
 
     camera.processMouse((float)xoffset, (float)yoffset);
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_J && action == GLFW_PRESS)
+        upJetpackMode = !upJetpackMode;
 }
 
 void error_callback(int error, const char* description) {
@@ -97,6 +127,8 @@ int main() {
     glfwSetCursorPosCallback(window, cursor_pos_callback);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwSetKeyCallback(window, key_callback);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         error_callback(42, "Failed to initialize GLAD");
