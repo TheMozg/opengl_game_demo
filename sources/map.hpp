@@ -8,12 +8,10 @@
 #include <vector>
 #include <memory>
 
-
 class Map {
-private:
-    std::list<std::unique_ptr<OpenGLModel>> mObjects;
-    std::vector<std::shared_ptr<Texture>> mTextures;
 public:
-    void load(std::string const &filename);
-    void draw(GLuint modelLocation);
+    static std::list<std::unique_ptr<OpenGLModel>> load(
+        std::string const &filename, 
+        std::vector<std::shared_ptr<Texture>> textures
+    );
 };

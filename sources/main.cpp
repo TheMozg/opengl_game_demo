@@ -89,8 +89,12 @@ int main() {
     ourShader.attach("shaders/camera.vert");
     ourShader.link();
 
-    Map map;
-    map.load("maps/map01.bmp");
+    std::vector<std::shared_ptr<Texture>> textures;
+    textures.push_back(std::make_shared<Texture>("textures/portal_black.png"));
+    textures.push_back(std::make_shared<Texture>("textures/portal_white.jpg"));
+    textures.push_back(std::make_shared<Texture>("textures/portal_white_2.jpg"));
+
+    auto objects = Map::load("maps/map01.bmp", textures);
 
     ourShader.activate();
 
@@ -113,7 +117,9 @@ int main() {
         glm::mat4 view = camera.getViewMatrix();
         glUniformMatrix4fv(ourShader.getUniformLocation("view"), 1, GL_FALSE, &view[0][0]);
 
-        map.draw(ourShader.getUniformLocation("model"));
+        for (auto &obj : objects) {
+            obj->draw(ourShader.getUniformLocation("model"));
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
