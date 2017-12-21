@@ -42,18 +42,18 @@ void processInput(GLFWwindow *window) {
 
     auto cameraPosNew = camera.getPosition();
 
-    auto cameraPosTmp = cameraPosOld;
+    auto cameraPos = cameraPosOld;
     for (size_t i = 0; i < 3; i++ ) {
-        cameraPosTmp[i] = cameraPosNew[i];
+        cameraPos[i] = cameraPosNew[i];
         for (auto &obj : objects) {
-            if (obj->collidesWith(cameraPosTmp)) {
-                cameraPosTmp[i] = cameraPosOld[i];
+            if (obj->collidesWith(cameraPos, 0.3)) {
+                cameraPos[i] = cameraPosOld[i];
                 break;
             }
         }
     }
 
-    camera.setPosition(cameraPosTmp);
+    camera.setPosition(cameraPos);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -125,16 +125,7 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        auto cameraPosOld = camera.getPosition();
         processInput(window);
-        auto cameraPosNew = camera.getPosition();
-
-        for (auto &obj : objects) {
-            if (obj->collidesWith(cameraPosNew)) {
-                camera.setPosition(cameraPosOld);
-                break;
-            }
-        }
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

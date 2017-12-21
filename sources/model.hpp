@@ -26,7 +26,7 @@ public:
     ~OpenGLModel();
 
     virtual OpenGLModelType type() = 0;
-    virtual bool collidesWith(glm::vec3 point) = 0;
+    virtual bool collidesWith(glm::vec3 point, float offset) = 0;
 
     void draw(GLuint modelLocation);
     void move(glm::vec3 position);

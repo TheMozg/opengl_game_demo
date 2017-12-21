@@ -9,5 +9,5 @@ class Cube: public OpenGLModel {
 public:
     Cube(std::shared_ptr<Texture> texture);
     OpenGLModelType type() override;
-    bool collidesWith(glm::vec3 point) override;
+    bool collidesWith(glm::vec3 point, float offset) override;
 };
