@@ -17,12 +17,13 @@
 #include <list>
 #include <memory>
 
-#define SPAWN_OBJ_OFFSET 2.0f
-
 Camera camera(glm::vec3(20.0f, 2.0f, 10.0f), 180.0f, 0.0f);
 
 std::list<std::unique_ptr<OpenGLModel>> objects;
 std::vector<std::shared_ptr<Texture>> textures;
+
+std::unique_ptr<Octahedron> portal1;
+std::unique_ptr<Octahedron> portal2;
 
 bool upJetpackMode = false;
 const float upJumpVelocity = 5.0f;
@@ -97,11 +98,11 @@ void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 
-void spawn_portal( ) {
-  glm::vec3 cur = camera.getPosition( );
-  glm::vec3 front = camera.getDirection( );
-  objects.push_back(std::make_unique<Octahedron>(textures[3]));
-  objects.back()->move(cur + SPAWN_OBJ_OFFSET*front);
+std::unique_ptr<Octahedron> spawn_portal( ) {
+    auto portal = std::make_unique<Octahedron>(textures[3]);
+    portal->move(camera.getPosition() + camera.getDirection());
+    portal->velocity = camera.getDirection();
+    return portal;
 }
 
 
@@ -109,7 +110,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_J && action == GLFW_PRESS)
         upJetpackMode = !upJetpackMode;
 
-    if (key == GLFW_KEY_E && action == GLFW_PRESS) spawn_portal( );
+    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        portal1 = spawn_portal();
+    }
 }
 
 void error_callback(int error, const char* description) {
@@ -156,7 +159,6 @@ int main() {
     textures.push_back(std::make_shared<Texture>("textures/orange_noise.png"));
 
     objects = Map::load("maps/map01.bmp", textures);
-
     Shader screenShader;
     screenShader.attach("shaders/shadows.frag");
     screenShader.attach("shaders/shadows.vert");
@@ -173,6 +175,7 @@ int main() {
     screenShader.setInt("depthMap", 1);
 
     ShadowCubeMap depthCubemap;
+    depthCubemap.setPosition(camera.getPosition());
 
     unsigned int depthMapFBO;
     glGenFramebuffers(1, &depthMapFBO);
@@ -195,7 +198,16 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        depthCubemap.setPosition(camera.getPosition() + glm::vec3(0.0f, 2.0f, 0.0f));
+        if (portal1) {
+            portal1->move(portal1->getPosition() + portal1->velocity*(float)deltaTime*3.0f);
+            for (auto &obj : objects) {
+                if (obj->collidesWith(portal1->getPosition(), 0.1f)) {
+                    portal1.reset();
+                    break;
+                }
+            }
+        }
+        if (portal1) depthCubemap.setPosition(portal1->getPosition());
         depthCubemap.activate();
 
         glViewport(0, 0, 1024, 1024);
@@ -210,6 +222,7 @@ int main() {
         for (auto &obj : objects) {
             obj->draw(shadowShader.getUniformLocation("model"));
         }
+        if (portal1) portal1->draw(shadowShader.getUniformLocation("model"));
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         int width, height;
@@ -228,6 +241,7 @@ int main() {
         for (auto &obj : objects) {
             obj->draw(screenShader.getUniformLocation("model"));
         }
+        if (portal1) portal1->draw(screenShader.getUniformLocation("model"));
 
         glfwSwapBuffers(window);
         glfwPollEvents();

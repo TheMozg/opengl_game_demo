@@ -32,4 +32,6 @@ public:
     void draw(GLuint modelLocation);
     void move(glm::vec3 position);
     void rotate(glm::vec3 angles);
+
+    glm::vec3 getPosition();
 };

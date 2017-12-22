@@ -7,6 +7,7 @@
 
 class Octahedron: public OpenGLModel {
 public:
+    glm::vec3 velocity;
     Octahedron(std::shared_ptr<Texture> texture);
     OpenGLModelType type() override;
     bool collidesWith(glm::vec3 point, float offset) override;

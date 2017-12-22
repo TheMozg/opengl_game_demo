@@ -53,3 +53,8 @@ void OpenGLModel::move(glm::vec3 position) {
 void OpenGLModel::rotate(glm::vec3 angles) {
     mRotation = angles;
 }
+
+glm::vec3 OpenGLModel::getPosition()
+{
+    return mPosition;
+}
