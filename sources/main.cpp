@@ -11,6 +11,7 @@
 #include "quad.hpp"
 #include "octahedron.hpp"
 #include "map.hpp"
+#include "shadow.hpp"
 
 #include <iostream>
 #include <list>
@@ -98,7 +99,7 @@ void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
 
 void spawn_portal( ) {
   glm::vec3 cur = camera.getPosition( );
-  glm::vec3 front = camera.getFront( );
+  glm::vec3 front = camera.getDirection( );
   objects.push_back(std::make_unique<Octahedron>(textures[3]));
   objects.back()->move(cur + SPAWN_OBJ_OFFSET*front);
 }
@@ -149,11 +150,6 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader ourShader;
-    ourShader.attach("shaders/camera.frag");
-    ourShader.attach("shaders/camera.vert");
-    ourShader.link();
-
     textures.push_back(std::make_shared<Texture>("textures/portal_black.png"));
     textures.push_back(std::make_shared<Texture>("textures/portal_white.jpg"));
     textures.push_back(std::make_shared<Texture>("textures/portal_white_2.jpg"));
@@ -161,7 +157,30 @@ int main() {
 
     objects = Map::load("maps/map01.bmp", textures);
 
-    ourShader.activate();
+    Shader screenShader;
+    screenShader.attach("shaders/shadows.frag");
+    screenShader.attach("shaders/shadows.vert");
+    screenShader.link();
+
+    Shader shadowShader;
+    shadowShader.attach("shaders/shadows_depth.frag");
+    shadowShader.attach("shaders/shadows_depth.geom");
+    shadowShader.attach("shaders/shadows_depth.vert");
+    shadowShader.link();
+
+    screenShader.activate();
+    screenShader.setInt("diffuseTexture", 0);
+    screenShader.setInt("depthMap", 1);
+
+    ShadowCubeMap depthCubemap;
+
+    unsigned int depthMapFBO;
+    glGenFramebuffers(1, &depthMapFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap.getID(), 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     while (!glfwWindowShouldClose(window)) {
         double currentFrame = glfwGetTime();
@@ -176,17 +195,38 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        int width, height;
-        glfwGetFramebufferSize(window, &width,&height);
+        depthCubemap.setPosition(camera.getPosition() + glm::vec3(0.0f, 2.0f, 0.0f));
+        depthCubemap.activate();
 
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-        glUniformMatrix4fv(ourShader.getUniformLocation("projection"), 1, GL_FALSE, &projection[0][0]);
-
-        glm::mat4 view = camera.getViewMatrix();
-        glUniformMatrix4fv(ourShader.getUniformLocation("view"), 1, GL_FALSE, &view[0][0]);
+        glViewport(0, 0, 1024, 1024);
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        shadowShader.activate();
+        for (unsigned int i = 0; i < 6; ++i)
+            shadowShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", depthCubemap.getTransforms()[i]);
+        shadowShader.setFloat("far_plane", 25.0f);
+        shadowShader.setVec3("lightPos", depthCubemap.getPosition());
 
         for (auto &obj : objects) {
-            obj->draw(ourShader.getUniformLocation("model"));
+            obj->draw(shadowShader.getUniformLocation("model"));
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        int width, height;
+        glfwGetFramebufferSize(window, &width,&height);
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        screenShader.activate();
+        glm::mat4 projection = glm::perspective(45.0f, (float)width / (float)height, 0.1f, 100.0f);
+        glm::mat4 view = camera.getViewMatrix();
+        screenShader.setMat4("projection", projection);
+        screenShader.setMat4("view", view);
+        screenShader.setVec3("lightPos", depthCubemap.getPosition());
+        screenShader.setVec3("viewPos", camera.getPosition());
+        screenShader.setFloat("far_plane", 25.0f);
+
+        for (auto &obj : objects) {
+            obj->draw(screenShader.getUniformLocation("model"));
         }
 
         glfwSwapBuffers(window);

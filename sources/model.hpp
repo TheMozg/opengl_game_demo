@@ -18,10 +18,9 @@ protected:
     std::shared_ptr<Texture> mTexture;
     glm::vec3 mPosition;
     glm::vec3 mRotation;
-    GLuint mVerticesVBO;
-    GLuint mTexturesVBO;
+    GLuint mVBO;
     GLuint mVertexCount;
-    void initVBO(std::vector<float> vertexCoords, std::vector<float> textureCoords);
+    void initVBO(std::vector<float> &coordinates);
 public:
     OpenGLModel(std::shared_ptr<Texture> texture);
     ~OpenGLModel();

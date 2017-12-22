@@ -70,6 +70,11 @@ void Camera::setPosition(glm::vec3 position) {
     mPosition = position;
 }
 
+glm::vec3 Camera::getDirection()
+{
+    return mFront;
+}
+
 // Calculates the front vector from the Camera's (updated) Eular Angles
 void Camera::updateCameraVectors() {
     // Calculate the new Front vector
