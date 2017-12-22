@@ -16,7 +16,7 @@
 #include <list>
 #include <memory>
 
-#define SPAWN_OBJ_OFFSET 2
+#define SPAWN_OBJ_OFFSET 2.0f
 
 Camera camera(glm::vec3(20.0f, 2.0f, 10.0f), 180.0f, 0.0f);
 
@@ -100,7 +100,7 @@ void spawn_portal( ) {
   glm::vec3 cur = camera.getPosition( );
   glm::vec3 front = camera.getFront( );
   objects.push_back(std::make_unique<Octahedron>(textures[3]));
-  objects.back()->move(glm::vec3(cur.x + SPAWN_OBJ_OFFSET*front.x, cur.y + SPAWN_OBJ_OFFSET*front.y, cur.z + SPAWN_OBJ_OFFSET*front.z));
+  objects.back()->move(cur + SPAWN_OBJ_OFFSET*front);
 }
 
 
