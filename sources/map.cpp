@@ -2,6 +2,7 @@
 
 #include "quad.hpp"
 #include "cube.hpp"
+#include "octahedron.hpp"
 #include <stb_image.h>
 #include <string>
 #include <iostream>

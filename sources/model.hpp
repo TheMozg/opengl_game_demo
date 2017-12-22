@@ -9,7 +9,8 @@
 
 enum class OpenGLModelType {
     Quad,
-    Cube
+    Cube,
+    Octahedron
 };
 
 class OpenGLModel: public OpenGLObject {

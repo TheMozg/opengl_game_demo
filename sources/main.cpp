@@ -9,15 +9,19 @@
 #include "shader.hpp"
 #include "texture.hpp"
 #include "quad.hpp"
+#include "octahedron.hpp"
 #include "map.hpp"
 
 #include <iostream>
 #include <list>
 #include <memory>
 
+#define SPAWN_OBJ_OFFSET 2
+
 Camera camera(glm::vec3(20.0f, 2.0f, 10.0f), 180.0f, 0.0f);
 
 std::list<std::unique_ptr<OpenGLModel>> objects;
+std::vector<std::shared_ptr<Texture>> textures;
 
 bool upJetpackMode = false;
 const float upJumpVelocity = 5.0f;
@@ -91,9 +95,20 @@ void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
     camera.processMouse((float)xoffset, (float)yoffset);
 }
 
+
+void spawn_portal( ) {
+  glm::vec3 cur = camera.getPosition( );
+  glm::vec3 front = camera.getFront( );
+  objects.push_back(std::make_unique<Octahedron>(textures[3]));
+  objects.back()->move(glm::vec3(cur.x + SPAWN_OBJ_OFFSET*front.x, cur.y + SPAWN_OBJ_OFFSET*front.y, cur.z + SPAWN_OBJ_OFFSET*front.z));
+}
+
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_J && action == GLFW_PRESS)
         upJetpackMode = !upJetpackMode;
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS) spawn_portal( );
 }
 
 void error_callback(int error, const char* description) {
@@ -139,10 +154,10 @@ int main() {
     ourShader.attach("shaders/camera.vert");
     ourShader.link();
 
-    std::vector<std::shared_ptr<Texture>> textures;
     textures.push_back(std::make_shared<Texture>("textures/portal_black.png"));
     textures.push_back(std::make_shared<Texture>("textures/portal_white.jpg"));
     textures.push_back(std::make_shared<Texture>("textures/portal_white_2.jpg"));
+    textures.push_back(std::make_shared<Texture>("textures/orange_noise.png"));
 
     objects = Map::load("maps/map01.bmp", textures);
 
