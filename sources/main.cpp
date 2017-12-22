@@ -48,12 +48,8 @@ void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(CameraMovement::RIGHT, (float)deltaTime);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        if (upJetpackMode){
+        if (upJetpackMode || upCollision){
             upVelocity = upJumpVelocity;
-        } else {
-            if (upCollision) {
-                upVelocity = upJumpVelocity;
-            }
         }
     }
 
@@ -155,6 +151,9 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
+        if (deltaTime > 0.2) {
+            deltaTime = 0.2;
+        }
         lastFrame = currentFrame;
 
         processInput(window);
