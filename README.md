@@ -12,7 +12,7 @@ Simple 3D game engine
 * Map loading from `.bmp`
 
 ## Setup
-###### Windows
+#### Windows
 1. Install [Visual Studio](https://www.visualstudio.com/). You may need to set
 path to `MSBuild.exe` in `Makefile`. For Visual Studio Community 2017 default location is
 `C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe`.
@@ -20,7 +20,7 @@ path to `MSBuild.exe` in `Makefile`. For Visual Studio Community 2017 default lo
 2. Install [CMake](https://cmake.org/) and add `cmake.exe` to `PATH`.
 Default location is `C:\Program Files\CMake\bin`.
 
-###### Linux
+#### Linux
 1. Install [CMake](https://cmake.org/).
 2. Install [XOrg](https://www.x.org/wiki/) development package. 
 For example `xorg-dev` if you are using `Debian` or `Ubuntu`.
@@ -29,9 +29,9 @@ For example `xorg-dev` if you are using `Debian` or `Ubuntu`.
 Use `Makefile` CMake wrapper to automatically build everything and place game
 files in `install.out` directory.
 
-###### Windows
+#### Windows
 `.\toolchain\make.exe`
-###### Linux
+#### Linux
 `make`
 
 
